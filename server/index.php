@@ -14,7 +14,7 @@ file_put_contents( $rootPath."/storage/$object->id.json", json_encode([
     'time' => $time
 ]));
 
-$logFilePath = $rootPath.'/storage/log.txt';
-$str = file_get_contents($logFilePath);
-$str .= "Обновление времени у объекта $objectId: " . date('H:i:s', $time) . "\r\n";
-file_put_contents($logFilePath, $str);
+//$logFilePath = $rootPath.'/storage/log.txt';
+//$str = file_get_contents($logFilePath);
+//$str .= "Обновление времени у объекта $objectId: " . date('H:i:s', $time) . "\r\n";
+//file_put_contents($logFilePath, $str);
