@@ -1,0 +1,10 @@
+.idea
+/app/.idea
+/server/.idea
+
+/app/node_modules
+/app/settings.json
+
+/server/vendor
+/server/storage
+/server/config.json

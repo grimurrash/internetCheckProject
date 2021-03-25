@@ -1,0 +1,7 @@
+{
+    "name": "grim/ping-server",
+    "require": {
+        "longman/telegram-bot": "^0.64.0",
+        "phpmailer/phpmailer": "^6.3"
+    }
+}

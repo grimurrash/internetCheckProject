@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "email": {
+      "host": "ssl://smtp.gmail.com",
+      "port": 465,
+      "username": "",
+      "password": "",
+      "addressList": [
+        ""
+      ]
+    },
+    "telegram": {
+      "botToken": "",
+      "botUsername": "",
+      "chatId": ""
+    }
+  },
+  "objects": [
+    {
+      "id": 1,
+      "name": "1"
+    },
+    {
+      "id": 2,
+      "name": "2"
+    }
+  ]
+}
