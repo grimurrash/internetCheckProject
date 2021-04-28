@@ -12,7 +12,6 @@ header('Content-type: text/html; charset=utf-8');
 $rootPath = $_SERVER['DOCUMENT_ROOT'];
 
 $config = json_decode(file_get_contents($rootPath . "/config.json"));
-$objects = $config->objects;
 $settings = $config->settings;
 
 #region Mailer setting
@@ -52,10 +51,13 @@ $telegram = new Telegram($botToken, $botUsername);
 
 $currentTime = time();
 
+$objects = $config->objects;
+//  Проверка объектов
 foreach ($objects as $object) {
     $time = json_decode(file_get_contents($rootPath . "/storage/$object->id.json"))->time;
+
     // Если пошло 60 сек
-    if ($time + 65 < $currentTime && $object->status != 'error') {
+    if ($time < $currentTime - 65 && $object->status !== 'error') {
 
         #region Send Telegram Message
         Request::sendMessage([
@@ -75,10 +77,11 @@ foreach ($objects as $object) {
         $mail->msgHTML($body);
         $mail->send();
         #endregion
+
         $object->status = 'error';
         echo "Давно не было запросов у объекта $object->name в " . date('H:i:s', $time) . "\r\n";
-    } else if ($object->status == 'error'){
 
+    } else if ($time > $currentTime - 30 && $object->status === 'error') {
         #region Send Telegram Message
         Request::sendMessage([
             'chat_id' => $chatId,
@@ -100,7 +103,57 @@ foreach ($objects as $object) {
     }
 }
 
-file_put_contents( $rootPath."/config.json", json_encode([
-    'settings'=> $settings,
-    'objects' => $objects
+$sites = $config->sites;
+//  Проверка сайта
+foreach ($sites as $site) {
+    $siteIsLoad = file_get_contents($site->url);
+    //  Если сайт не загрузился
+    if ($siteIsLoad === false && $site->status === "good") {
+        $site->status = 'warning';
+    } else if ($siteIsLoad === false && $site->status === 'warning') {
+        #region Send Telegram Message
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'parse_mode' => 'html',
+            "text" =>
+                "‼️<b>Перестал работать сайт: $site->name</b> ‼"
+        ]);
+        #endregion
+
+        #region Send gMail Message
+        $mail->Subject = "Перестал работать сайт: $site->name";
+        $body = "<p>Проблема с подключением к сайту $site->name</p>";
+        $mail->msgHTML($body);
+        $mail->send();
+        #endregion
+
+        $site->status = 'error';
+        echo "<b>Перестал работать сайт: $site->name</b>";
+    } else if ($siteIsLoad !== false && $site->status === "error") {
+
+        #region Send Telegram Message
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'parse_mode' => 'html',
+            "text" =>
+                "‼️<b>Работа сайта $site->name востановлена</b> ‼️"
+        ]);
+        #endregion
+
+        #region Send gMail Message
+        $mail->Subject = "Работа сайта $site->name востановлена!";
+        $body = "<p>Проблема с подключением к сайту $site->name отсутствует</p>";
+        $mail->msgHTML($body);
+        $mail->send();
+        #endregion
+
+        $site->status = 'good';
+    }
+}
+
+file_put_contents($rootPath . "/config.json", json_encode([
+    'settings' => $settings,
+    'objects' => $objects,
+    'sites' => $sites
 ]));
+

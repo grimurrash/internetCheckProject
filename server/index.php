@@ -8,9 +8,9 @@ $rootPath = $_SERVER['DOCUMENT_ROOT'];
 echo "$objectId\r\n";
 
 $objects = json_decode(file_get_contents("config.json"))->objects;
-$object = $objects[$objectId-1];
+$object = $objects[$objectId - 1];
 var_dump($object);
-file_put_contents( $rootPath."/storage/$object->id.json", json_encode([
+file_put_contents($rootPath . "/storage/$object->id.json", json_encode([
     'time' => $time
 ]));
 

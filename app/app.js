@@ -3,7 +3,7 @@ const fs = require('fs')
 
 let config;
 
-fs.readFile('settings.json',function(err, data) {
+fs.readFile('settings.json', function (err, data) {
     if (err) console.log('Ошибка загрузки настроек')
 
     config = JSON.parse(data)
